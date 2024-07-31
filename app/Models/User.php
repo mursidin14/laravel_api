@@ -43,16 +43,16 @@ class User extends Model implements Authenticatable
 
     public function getRememberToken()
     {
-        // tidak saya gunakan
+        return $this->token;
     }
 
     public function setRememberToken($value)
     {
-        // tidak saya gunakan
+        $this->token = $value;
     }
 
     public function getRememberTokenName()
     {
-        // tidak saya gunakan
+        return 'token';
     }
 }

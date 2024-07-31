@@ -24,4 +24,5 @@ Route::post('/users/login', [UserController::class, 'login']);
 
 Route::middleware('api_auth')->group(function (){
     Route::get('users/current', [UserController::class, 'getUser']);
+    Route::patch('users/current', [UserController::class, 'update']);
 });

@@ -6,6 +6,7 @@ use App\Models\User;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserTest extends TestCase
@@ -154,5 +155,71 @@ class UserTest extends TestCase
                 ]
             ]
           ]);
+    }
+
+    public function testPasswordSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $oldUser = User::query()->where('username', 'test')->first();
+
+        $this->patch('api/users/current', [
+            'password' => 'baru'
+        ],
+        [
+            'Authorization' => 'test'
+        ]
+    )->assertStatus(200)
+     ->assertJson([
+        'data' => [
+            'username' => 'test',
+            'name' => 'test'
+        ]
+     ]);
+
+     $newUser = User::query()->where('username', 'test')->first();
+     self::assertNotEquals($oldUser->password, $newUser->password);
+    }
+
+    public function testNameUpdateSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $oldUser = User::query()->where('username', 'test')->first();
+
+        $this->patch('api/users/current', [
+            'name' => 'mure'
+        ],
+        [
+            'Authorization' => 'test'
+        ]
+    )->assertStatus(200)
+     ->assertJson([
+        'data' => [
+            'username' => 'test',
+            'name' => 'mure'
+        ]
+     ]);
+
+     $newUser = User::query()->where('username', 'test')->first();
+     self::assertNotEquals($oldUser->name, $newUser->name);
+    }
+
+    public function testUpdateFailed() 
+    {
+        $this->seed([UserSeeder::class]);
+
+        $this->patch('api/users/current', [
+            'name' => 'Dengan langkah-langkah ini, Anda akan memiliki file .env yang siap digunakan untuk konfigurasi proyek Laravel Anda. File .env ini sangat penting untuk menyimpan pengaturan konfigurasi yang sensitif dan spesifik lingkungan, seperti informasi koneksi database, kunci aplikasi, dan lainnya.'
+        ],
+        [
+            'Authorization' => 'test'
+        ]
+    )->assertStatus(400)
+     ->assertJson([
+        'errors' => [
+            'name' => [
+                "The name field must not be greater than 100 characters."
+            ]
+        ]
+     ]);
     }
 }
