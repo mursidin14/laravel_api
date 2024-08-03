@@ -15,6 +15,13 @@ class Contact extends Model
     public $incrementing = true;
     public $timestamps = true;
 
+    protected $fillable = [
+        'firstname',
+        'lastname',
+        'email',
+        'phone'
+    ];
+
     public function User(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
