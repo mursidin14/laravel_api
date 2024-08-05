@@ -106,4 +106,67 @@ class ContactTest extends TestCase
           ]);
     }
 
+    public function testOutherContact()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+
+        $this->get('api/contacts/'.$contact->id, [
+            'Authorization' => 'test2'
+        ])->assertStatus(404)
+          ->assertJson([
+            'errors' => [
+                'message' => [
+                    'not found'
+                ]
+            ]
+          ]);
+    }
+    
+
+    public function testUpdateContact()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+
+        $this->put('/api/contacts/'.$contact->id, [
+                'firstname' => 'test3',
+                'lastname' => 'test3',
+                'email' => 'test3@gmail.com',
+                'phone' => '12345'
+        ], [
+            'Authorization' => 'test'
+        ])->assertStatus(200)
+          ->assertJson([
+            'data' => [
+                'firstname' => 'test3',
+                'lastname' => 'test3',
+                'email' => 'test3@gmail.com',
+                'phone' => '12345'
+            ]
+          ]);
+    }
+
+    public function testFiledUpdate()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+
+        $this->put('/api/contacts/'.$contact->id, [
+                'firstname' => '',
+                'lastname' => 'test3',
+                'email' => 'test3@gmail.com',
+                'phone' => '12345'
+        ], [
+            'Authorization' => 'test'
+        ])->assertStatus(400)
+          ->assertJson([
+            'errors' => [
+                'firstname' => [
+                    "The firstname field is required."
+                ]
+            ]
+          ]);
+    }
+
 }
