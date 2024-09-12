@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Contact;
 use Database\Seeders\ContactSeeder;
+use Database\Seeders\SearchSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class ContactTest extends TestCase
@@ -196,6 +198,58 @@ class ContactTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testBySearchFirstName()
+    {
+        $this->seed([UserSeeder::class, SearchSeeder::class]);
+        $response = $this->get('api/contacts?name=first', [
+            'Authorization' => 'test'
+        ])->assertStatus(200)
+         ->json();
+
+         Log::info(json_encode($response, JSON_PRETTY_PRINT));
+         self::assertEquals(10, count($response['data']));
+         self::assertEquals(20, $response['meta']['total']);
+    }
+
+    public function testBySearchLastName()
+    {
+        $this->seed([UserSeeder::class, SearchSeeder::class]);
+        $response = $this->get('api/contacts?name=last', [
+            'Authorization' => 'test'
+        ])->assertStatus(200)
+          ->json();
+
+          Log::info(json_encode($response, JSON_PRETTY_PRINT));
+          self::assertEquals(10, count($response['data']));
+          self::assertEquals(20, $response['meta']['total']);
+    }
+
+    public function testBySearchEmail()
+    {
+        $this->seed([UserSeeder::class, SearchSeeder::class]);
+        $response = $this->get('api/contacts?email=mur', [
+            'Authorization' => 'test'
+        ])->assertStatus(200)
+          ->json();
+
+          Log::info(json_encode($response, JSON_PRETTY_PRINT));
+          self::assertEquals(10, count($response['data']));
+          self::assertEquals(20, $response['meta']['total']);
+    }
+
+    public function testBySearchPhone()
+    {
+        $this->seed([UserSeeder::class, SearchSeeder::class]);
+        $response = $this->get('api/contacts?phone=12345', [
+            'Authorization' => 'test'
+        ])->assertStatus(200)
+          ->json();
+
+        Log::info(json_encode($response, JSON_PRETTY_PRINT));
+        self::assertEquals(10, count($response['data']));
+        self::assertEquals(20, $response['meta']['total']);
     }
 
 }

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactCreateRequest;
 use App\Http\Requests\ContactUpdateRequest;
+use App\Http\Resources\ContactCollection;
 use App\Http\Resources\ContactResource;
 use App\Models\Contact;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -89,13 +91,34 @@ class ContactController extends Controller
             ])->setStatusCode(200);
     }
 
-    public function search(Request $request): JsonResponse
+    public function search(Request $request): ContactCollection
     {
         $user = Auth::user();
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
 
         $contact = Contact::query()->where('user_id', $user->id);
-        
+        $contacts = $contact->where(function(Builder $builder) use ($request) {
+            $name = $request->input('name');
+            if($name) {
+                $builder->where(function(Builder $builder) use ($name) {
+                    $builder->orWhere('firstname', 'like', '%'.$name.'%');
+                    $builder->orWhere('lastname', 'like', '%'.$name.'%');
+                });
+            }
+
+            $email = $request->input('email');
+            if($email) {
+                $builder->where('email', 'like', '%'.$email.'%');
+            }
+
+            $phone = $request->input('phone');
+            if($phone) {
+                $builder->where('phone', 'like', '%'.$phone.'%');
+            }
+        });
+        $contacts = $contact->paginate(perPage:$size, page:$page);
+
+        return new ContactCollection($contacts);
     }
 }
