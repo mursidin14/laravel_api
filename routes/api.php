@@ -31,4 +31,5 @@ Route::middleware('api_auth')->group(function (){
     Route::post('contacts', [ContactController::class, 'create']);
     Route::get('contacts/{id}', [ContactController::class, 'getContact']);
     Route::put('contacts/{id}', [ContactController::class, 'update']);
+    Route::delete('contacts/{id}', [ContactController::class, 'delete']);
 });
