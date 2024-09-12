@@ -182,4 +182,20 @@ class ContactTest extends TestCase
           ]);
     }
 
+    public function testContactDeleteFailed()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::limit(1)->first();
+        $this->get('api/contacts/'.$contact->id + 1, [], [
+                'Authorization' => 'test'
+            ])->assertStatus(404)
+              ->assertJson([
+                'errors' => [
+                    'message' => [
+                        'not found'
+                    ]
+                ]
+            ]);
+    }
+
 }
