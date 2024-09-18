@@ -7,6 +7,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import NotFound from "../pages/NotFound";
 import Contact from "../pages/Contact";
+import Profile from "../pages/Profile";
 
 export const router =  createBrowserRouter([
     {
@@ -36,7 +37,11 @@ export const router =  createBrowserRouter([
             {
                 path:'/contacts/:id',
                 element:<Contact />
-            }
+            },
+            {
+                path:'/me',
+                element:<Profile />
+            },
         ]
     },
     {

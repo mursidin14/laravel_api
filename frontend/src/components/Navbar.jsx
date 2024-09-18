@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import { UserIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { NavLink, Link } from "react-router-dom";
 import { useStateContext } from '../contexts/ContextProvider';
 import { axiosClient } from '../api/axios';
+import { Spinner } from 'flowbite-react';
 
 
 const Menus = [
@@ -12,30 +13,42 @@ const Menus = [
 ]
 
 export default function Navbar() {
-    const { user, setUser, setToken } = useStateContext();
+    const { user, setUser, setToken, loadUser, setLoadUser } = useStateContext();
+    const [load, setLoad] = useState(false);
+
 
     const handleLogout = (e) => {
         e.preventDefault();
+        setLoad(true);
         axiosClient.delete('users/logout')
         .then(() => {
             setUser(null);
             setToken(null);
-            return window.location.reload();
+            window.location.reload();
          })
     }
 
     useEffect(() => {
+            setLoadUser(true);
             axiosClient.get('/users/current')
             .then((response) => {
                 setUser(response.data.data);
+                setLoadUser(false);
             }).catch((err) => {
                 console.log(err)
+                setLoadUser(false);
             })
         }, []);
 
 
     return (
         <Disclosure as="nav" className="fixed top-0 left-0 right-0 bg-white z-10 shadow-xl">
+         {
+            load && 
+            <div className='h-screen flex justify-center items-center'>
+                <Spinner color={'gray'} size={'xl'} />
+            </div>
+         }
         <div className="mx-auto max-w-6xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="inset-y-0 left-0 flex items-center sm:hidden">
@@ -66,10 +79,16 @@ export default function Navbar() {
             </div>
             <div className="sm:ml-6">
                 <div className="flex items-center space-x-2 lg:space-x-5 dark:text-white">
+                    <Link to="/me">
                     <div className='flex'>
-                           {user && <Link to={`/contacts/${user.id}`}>{user.name}</Link>}
+                        {  
+                            loadUser ? 
+                            <div className='bg-slate-200 w-32 h-6 animate-pulse rounded-md'></div> :
+                            user && <span>{user.name}</span>
+                        }
                           <UserIcon className="text-current h-6" />
                     </div>
+                    </Link>
                     <button onClick={handleLogout} className='bg-white border rounded-md py-1 px-3'>
                         Logout
                     </button>

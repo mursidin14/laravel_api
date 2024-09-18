@@ -12,15 +12,15 @@ export default function Contact() {
 
   
   useEffect(() => {
-    const getContactById = async(id) => {
+    const getContactById = async() => {
       try {
-        const response = await axiosClient.get(`/contacts/${id}`)
+        const response = await axiosClient.get(`/contacts?1=10`)
         console.log(response)
       } catch (error) {
         console.log(error)
       }
     }
-    getContactById(id)
+    getContactById()
   }, [id])
 
 
