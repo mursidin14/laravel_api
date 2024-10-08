@@ -15,6 +15,7 @@ export default function ContextProvider({children}) {
     const [user, setUser] = useState(null);
     const [token, _setToken] = useState(localStorage.getItem("access_token") || null);
     const [openModal, setOpenModal] = useState(false);
+    const [modalUpdate, setModalUpdate] = useState(false);
     const [loadUser, setLoadUser] = useState(false);
 
     const setToken = (token) => {
@@ -37,6 +38,8 @@ export default function ContextProvider({children}) {
             setOpenModal,
             loadUser,
             setLoadUser,
+            modalUpdate,
+            setModalUpdate
          }}>
             {children}
         </stateContext.Provider>
